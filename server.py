@@ -8,7 +8,24 @@ import names
 from websockets import WebSocketServerProtocol
 from websockets.exceptions import ConnectionClosedOK
 
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("EXC Logger")
+logger.setLevel(logging.DEBUG)
+
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
+ch.setFormatter(formatter)
+
+logger.addHandler(ch)
+
+fh = logging.FileHandler("app.log")
+fh.setLevel(logging.INFO)
+fh.setFormatter(formatter)
+
+logger.addHandler(fh)
 
 
 async def request(url):
@@ -56,14 +73,14 @@ class Server:
                 if len(r) > 2:
                     lst_curr = []
                     lst_curr += r[2:]
-                    # print(lst_curr)
+                logger.info("Exchange rate request sent...")
                 res = await curr(int(r[1]), lst_curr)
                 for r in res:
                     d = r.pop("date")
                     tmp = {k: v for k, v in r.items()}
                     to_show = f"Date: {d}  Currency: {tmp} "
                     await self.send_to_clients(json.dumps(to_show))
-
+                logger.info("Exchange rate request received")
             else:
                 await self.send_to_clients(f"{ws.name}: {message}")
 
@@ -75,4 +92,9 @@ async def main():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        level=logging.INFO,
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
     asyncio.run(main())
