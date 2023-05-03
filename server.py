@@ -53,7 +53,11 @@ class Server:
         async for message in ws:
             if message.startswith("exchange"):
                 r = message.split(" ")
-                res = await curr(int(r[1]))
+                if len(r) > 2:
+                    lst_curr = []
+                    lst_curr += r[2:]
+                    # print(lst_curr)
+                res = await curr(int(r[1]), lst_curr)
                 for r in res:
                     d = r.pop("date")
                     tmp = {k: v for k, v in r.items()}

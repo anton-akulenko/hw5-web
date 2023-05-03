@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 
 from datetime import datetime, timedelta
 
-currency_list = ["USD", "EUR"]
+# currency_list = ["USD", "EUR"]
 
 
 async def get_exchange(days, currency_list):
@@ -54,7 +54,9 @@ def get_period(days=1):
     return urls
 
 
-async def main(period=1):
+async def main(period=1, currency_add=None):
+    currency_list = ["USD", "EUR"]
+    currency_list += currency_add
     res2 = await get_exchange(period, currency_list)
 
     return res2
@@ -73,4 +75,4 @@ if __name__ == "__main__":
                 currency_list.append(sys.argv[c + 2])
     except:
         period = 1
-    asyncio.run(main(period=period))
+    asyncio.run(main(period=period, currency_list=currency_list))
